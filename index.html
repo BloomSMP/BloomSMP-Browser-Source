@@ -4,23 +4,51 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://mcapi.us/scripts/minecraft.min.js"></script>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <style>
+      .server-status {
+        text-align: right;
+        font-family: "Montserrat", sans-serif;
+      }
+      .players-online {
+        color: rgb(143, 200, 99);
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 24px;
+        text-transform: uppercase;
+      }
+      .ip {
+        color: rgba(232, 230, 227, 0.75);
+        font-size: 12.8px;
+        font-weight: 600;
+        line-height: 19.2px;
+        text-transform: uppercase;
+      }
+    </style>
   </head>
 
   <body>
     <div class="server-status">
-        <span class="players">0/0</span> players online<br />
-        play.bloomsmp.net
+        <div class="players-online">
+          <span class="players">0/0</span> players online<br />
+        </div>
+        <div class="ip">
+          play.bloomsmp.net
+        </div>
     </div>
 
     <script>
-        MinecraftAPI.getServerStatus('play.bloomsmp.net', function (err, status) {
-            if (err) {
-                return;
+        function fetchStatus() {
+          fetch("https://api.mcsrvstat.us/3/play.bloomsmp.net", {cache: "no-cache"}).then((statusResponse) => statusResponse.json()).then((bloomStatus) => {
+            if (!bloomStatus.online) {
+              return;
             }
-
-            document.querySelector('.players').innerHTML = status.players.now + '/' + status.players.max;
-        });
+            
+            document.querySelector('.players').innerHTML = bloomStatus.players.online + '/' + bloomStatus.players.max;
+          });
+        }
+        fetchStatus();
+        setInterval(fetchStatus, 60000);
     </script>
   </body>
 </html>
